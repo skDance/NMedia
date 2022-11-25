@@ -7,12 +7,11 @@ data class Post(
     val author: String,
     val published: String,
     val content: String,
-    var likesCount: Int,
-    var sharesCount: Int,
-    var viewsCount: Int,
-    var likedByMe: Boolean
+    val likesCount: Int,
+    val sharesCount: Int,
+    val viewsCount: Int,
+    val likedByMe: Boolean
 ) {
-
     fun setCount(count: Int): String {
         var stringCount = count.toString()
         var countArray = stringCount.toCharArray()
