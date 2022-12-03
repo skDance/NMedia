@@ -1,16 +1,14 @@
 package ru.netology.dto
 
-import android.widget.ImageView
-
 data class Post(
-    val id: Int,
+    val id: Long,
     val author: String,
     val published: String,
     val content: String,
     val likesCount: Int,
     val sharesCount: Int,
     val viewsCount: Int,
-    val likedByMe: Boolean
+    val likedByMe: Boolean,
 ) {
     fun setCount(count: Int): String {
         var stringCount = count.toString()
