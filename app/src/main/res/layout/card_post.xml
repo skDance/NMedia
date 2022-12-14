@@ -26,7 +26,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         app:layout_constraintBottom_toTopOf="@id/posts_published"
-        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintEnd_toStartOf="@id/menuButton"
         app:layout_constraintStart_toEndOf="@id/post_avatar"
         app:layout_constraintTop_toTopOf="@id/post_avatar"
         tools:text="@sample/posts.json/data/author" />
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@id/post_avatar"
-        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintEnd_toStartOf="@id/menuButton"
         app:layout_constraintStart_toEndOf="@id/post_avatar"
         app:layout_constraintTop_toBottomOf="@id/posts_author"
         tools:text="@sample/posts.json/data/published" />
@@ -63,7 +63,7 @@
         app:constraint_referenced_ids="post_avatar,posts_author,posts_published" />
 
     <ImageButton
-        android:id="@+id/menu"
+        android:id="@+id/menuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
