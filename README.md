@@ -9,6 +9,7 @@
 * «Отображение списков: RecyclerView»
 * «CRUD: списки, добавление, удаление, изменение»
 * «Material Design»
+* «Intents»
 
 Задачи:
 1. Code Like a Pro
@@ -22,3 +23,5 @@
 1. CRUD
 1. Отмена редактирования
 1. Кнопки
+1. Editing
+1. YouTube Video

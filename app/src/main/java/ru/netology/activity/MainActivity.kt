@@ -1,11 +1,16 @@
 package ru.netology.activity
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.launch
 import androidx.activity.viewModels
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DefaultItemAnimator
+import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
 import ru.netology.databinding.ActivityMainBinding
@@ -16,6 +21,16 @@ import ru.netology.viewmodel.PostViewModel
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: PostViewModel by viewModels()
+    private val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
+        result ?: return@registerForActivityResult
+        viewModel.changeContent(result)
+        viewModel.save()
+    }
+    private val editPostLauncher = registerForActivityResult(EditPostResultContract()) { result ->
+        result ?: return@registerForActivityResult
+        viewModel.changeContent(result)
+        viewModel.save()
+    }
     private val adapter = PostsAdapter(object : onInteractionListener {
         override fun onLike(post: Post) {
             viewModel.likeById(post.id)
@@ -23,6 +38,13 @@ class MainActivity : AppCompatActivity() {
 
         override fun onShare(post: Post) {
             viewModel.shareById(post.id)
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, post.content)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(intent, getString(R.string.chooser_share_post))
+            startActivity(shareIntent)
         }
 
         override fun onRemove(post: Post) {
@@ -30,7 +52,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onEdit(post: Post) {
+            editPostLauncher.launch(post.content)
             viewModel.edit(post)
+        }
+
+        override fun onPlayVideo(post: Post) {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
+            startActivity(intent)
         }
     })
 
@@ -43,50 +71,14 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(posts)
         }
 
-        viewModel.edited.observe(this) { post ->
-            if (post.id == 0L) {
-                binding.canselSaveButton.visibility = View.GONE
-                return@observe
-            } else {
-                binding.canselSaveButton.visibility = View.VISIBLE
-            }
-            with(binding.contentEditText) {
-                requestFocus()
-                setText(post.content)
-            }
-        }
-
         val itemAnimator = binding.list.itemAnimator
         if (itemAnimator is DefaultItemAnimator) {
             itemAnimator.supportsChangeAnimations = false
         }
-        binding.saveButton.setOnClickListener {
-            with(binding.contentEditText) {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Content can't be empty",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
 
-                viewModel.changeContent(text.toString())
-                viewModel.save()
-
-                setText("")
-                clearFocus()
-                AndroidUtil.hideKeyboard(this)
-            }
-        }
-
-        binding.canselSaveButton.setOnClickListener {
-            with(binding.contentEditText) {
-                setText("")
-                clearFocus()
-                AndroidUtil.hideKeyboard(this)
-            }
-            binding.canselSaveButton.visibility = View.GONE
+        binding.fab.setOnClickListener {
+            newPostLauncher.launch()
         }
     }
+
 }
