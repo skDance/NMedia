@@ -2,26 +2,26 @@
 
 Домашние задания к занятиям:
 * «Android Studio, SDK, эмулятор и первое приложение»
+  + Code Like a Pro
 * «Ресурсы, View и ViewGroup»
+  + Launcher Icon
+  + Translations
 * «ConstraintLayout»
+  + Layout
 * «Обработка событий в Android»
+  + Like, Share
+  + Parent Child
 * «Архитектура: MVVM»
+  + MVVM
 * «Отображение списков: RecyclerView»
+  + RecyclerView
 * «CRUD: списки, добавление, удаление, изменение»
+  + CRUD
+  + Отмена редактирования
 * «Material Design»
+  + Кнопки
 * «Intents»
-
-Задачи:
-1. Code Like a Pro
-1. Launcher Icon
-1. Translations
-1. Layout
-1. Like, Share
-1. Parent Child
-1. MVVM
-1. RecyclerView
-1. CRUD
-1. Отмена редактирования
-1. Кнопки
-1. Editing
-1. YouTube Video
+  + Editing
+  + YouTube Video
+* «Хранение данных»
+  + Хранение данных

@@ -1,5 +1,6 @@
 package ru.netology.activity
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,8 @@ import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
