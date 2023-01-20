@@ -25,3 +25,5 @@
   + YouTube Video
 * «Хранение данных»
   + Хранение данных
+* «Fragments, FragmentManager»
+  + Details
