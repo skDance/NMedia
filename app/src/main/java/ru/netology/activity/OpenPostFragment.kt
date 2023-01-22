@@ -36,61 +36,67 @@ class OpenPostFragment : Fragment() {
             false
         )
 
-        viewModel.openPost.observe(viewLifecycleOwner) { post ->
-            with(binding.scrollPostContent) {
-                postsAuthor.text = post.author
-                postsContent.text = post.content
-                postsPublished.text = post.published
-                likesButton.text = post.setCount(post.likesCount)
-                shareButton.text = post.setCount(post.sharesCount)
-                viewsButton.text = post.setCount(post.viewsCount)
-                likesButton.isChecked = post.likedByMe
-                likesButton.setOnClickListener {
-                    viewModel.likeById(post.id)
-                }
-                shareButton.setOnClickListener {
-                    viewModel.shareById(post.id)
-                    val intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, post.content)
-                        type = "text/plain"
-                    }
-                    val shareIntent =
-                        Intent.createChooser(intent, getString(R.string.chooser_share_post))
-                    startActivity(shareIntent)
-                }
-                menuButton.setOnClickListener {
-                    PopupMenu(it.context, it).apply {
-                        inflate(R.menu.options_post)
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.remove -> {
-                                    findNavController().navigateUp()
-                                    viewModel.removeById(post.id)
-                                    true
-                                }
-                                R.id.edit -> {
-                                    viewModel.edit(post)
-                                    val text = post.content
-                                    val bundle = Bundle()
-                                    bundle.putString("editPostText", text)
-                                    findNavController().navigate(
-                                        R.id.action_openPostFragment_to_editPostFragment,
-                                        bundle
-                                    )
-                                    true
-                                }
-                                else -> false
-                            }
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            viewModel.openPostById.observe(viewLifecycleOwner) { postId ->
+                val post = posts.find { it.id == postId }
+                with(binding.scrollPostContent) {
+                    post?.let {
+                        postsAuthor.text = it.author
+                        postsContent.text = it.content
+                        postsPublished.text = it.published
+                        likesButton.text = it.setCount(it.likesCount)
+                        shareButton.text = it.setCount(it.sharesCount)
+                        viewsButton.text = it.setCount(it.viewsCount)
+                        likesButton.isChecked = it.likedByMe
+
+                        likesButton.setOnClickListener {
+                            viewModel.likeById(post.id)
                         }
-                    }.show()
-                }
+                        shareButton.setOnClickListener {
+                            viewModel.shareById(post.id)
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, post.content)
+                                type = "text/plain"
+                            }
+                            val shareIntent =
+                                Intent.createChooser(intent, getString(R.string.chooser_share_post))
+                            startActivity(shareIntent)
+                        }
+                        menuButton.setOnClickListener { it ->
+                            PopupMenu(it.context, it).apply {
+                                inflate(R.menu.options_post)
+                                setOnMenuItemClickListener { item ->
+                                    when (item.itemId) {
+                                        R.id.remove -> {
+                                            findNavController().navigateUp()
+                                            viewModel.removeById(post.id)
+                                            true
+                                        }
+                                        R.id.edit -> {
+                                            viewModel.edit(post)
+                                            val text = post.content
+                                            val bundle = Bundle()
+                                            bundle.putString("editPostText", text)
+                                            findNavController().navigate(
+                                                R.id.action_openPostFragment_to_editPostFragment,
+                                                bundle
+                                            )
+                                            true
+                                        }
+                                        else -> false
+                                    }
+                                }
+                            }.show()
+                        }
 
-                videoFrame.isVisible = post.videoUrl != null
+                        videoFrame.isVisible = post.videoUrl != null
 
-                videoFrame.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
-                    startActivity(intent)
+                        videoFrame.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
+                            startActivity(intent)
+                        }
+                    }
                 }
             }
         }

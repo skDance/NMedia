@@ -36,7 +36,7 @@ class FeedFragment : Fragment() {
 
         val adapter = PostsAdapter(object : onInteractionListener {
             override fun openPost(post: Post) {
-                viewModel.openPost.value = post
+                viewModel.openPostById.value = post.id
                 findNavController().navigate(R.id.action_feedFragment_to_openPostFragment)
             }
 
