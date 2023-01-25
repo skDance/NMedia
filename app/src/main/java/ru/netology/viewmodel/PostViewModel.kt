@@ -4,11 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import ru.netology.db.AppDb
 import ru.netology.dto.Post
-import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryFileImpl
-import ru.netology.repository.PostRepositoryInMemoryImpl
-import ru.netology.repository.PostRepositorySharedPrefsImpl
+import ru.netology.repository.*
 
 private val empty = Post(
     id = 0,
@@ -22,7 +20,9 @@ private val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryFileImpl(application)
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDao
+    )
 
     val openPostById: MutableLiveData<Long> by lazy {
         MutableLiveData<Long>()

@@ -27,3 +27,5 @@
   + Хранение данных
 * «Fragments, FragmentManager»
   + Details
+* «SQL и SQLite»
+  + SQL

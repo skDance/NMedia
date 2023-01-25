@@ -5,7 +5,7 @@ data class Post(
     val author: String,
     val published: String,
     val content: String,
-    val videoUrl: String? = null,
+    val videoUrl: String? = " ",
     val likesCount: Int,
     val sharesCount: Int,
     val viewsCount: Int,
