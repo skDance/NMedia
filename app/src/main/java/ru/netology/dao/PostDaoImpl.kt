@@ -99,8 +99,18 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
         db.execSQL(
             """
                 UPDATE posts SET
-                    likes = likes + CASE  WHEN likedByMe THEN -1 ELSE 1 END,
+                    likesCount = likesCount + CASE  WHEN likedByMe THEN -1 ELSE 1 END,
                     likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
+                WHERE id = ?;
+            """.trimIndent(), arrayOf(id)
+        )
+    }
+
+    override fun shareById(id: Long) {
+        db.execSQL(
+            """
+                UPDATE posts SET
+                    sharesCount = sharesCount + 1
                 WHERE id = ?;
             """.trimIndent(), arrayOf(id)
         )

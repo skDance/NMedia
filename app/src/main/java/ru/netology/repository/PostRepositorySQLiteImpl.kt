@@ -1,10 +1,7 @@
 package ru.netology.repository
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import ru.netology.dao.PostDao
 import ru.netology.dto.Post
 
@@ -32,6 +29,7 @@ class PostRepositorySQLiteImpl(
             }
         }
         data.value = posts
+        dao.likeById(id)
     }
 
     override fun shareById(id: Long) {
@@ -39,11 +37,13 @@ class PostRepositorySQLiteImpl(
             if (it.id != id) it else it.copy(sharesCount = (it.sharesCount + 1))
         }
         data.value = posts
+        dao.shareById(id)
     }
 
     override fun removeById(id: Long) {
         posts = posts.filter { it.id != id }
         data.value = posts
+        dao.removeById(id)
     }
 
     override fun save(post: Post) {
