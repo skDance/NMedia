@@ -1,7 +1,6 @@
 package ru.netology.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
@@ -73,7 +72,7 @@ class PostViewHolder(
                 }.show()
             }
 
-            videoFrame.isVisible = post.videoUrl != null
+            videoFrame.isVisible = post.videoUrl != "empty"
 
             videoFrame.setOnClickListener {
                 onInteractionListener.onPlayVideo(post)
