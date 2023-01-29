@@ -5,15 +5,15 @@ data class Post(
     val author: String,
     val published: String,
     val content: String,
-    val videoUrl: String? = " ",
+    val likedByMe: Boolean,
     val likesCount: Int,
     val sharesCount: Int,
     val viewsCount: Int,
-    val likedByMe: Boolean,
+    val videoUrl: String = "empty",
 ) {
     fun setCount(count: Int): String {
-        var stringCount = count.toString()
-        var countArray = stringCount.toCharArray()
+        val stringCount = count.toString()
+        val countArray = stringCount.toCharArray()
         when {
             count in 0..999 -> return "$count"
             count in 1000..9999 -> {

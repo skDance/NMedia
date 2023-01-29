@@ -12,10 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.R
-import ru.netology.adapter.PostsAdapter
-import ru.netology.adapter.onInteractionListener
 import ru.netology.databinding.FragmentOpenPostBinding
-import ru.netology.dto.Post
 import ru.netology.viewmodel.PostViewModel
 
 
@@ -29,7 +26,7 @@ class OpenPostFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentOpenPostBinding.inflate(
             inflater,
             container,
@@ -90,7 +87,7 @@ class OpenPostFragment : Fragment() {
                             }.show()
                         }
 
-                        videoFrame.isVisible = post.videoUrl != null
+                        videoFrame.isVisible = post.videoUrl != "empty"
 
                         videoFrame.setOnClickListener {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
