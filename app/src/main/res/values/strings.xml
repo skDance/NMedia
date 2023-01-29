@@ -7,6 +7,10 @@
     <string name="chooser_share_post">Share Post</string>
     <string name="error_empty_content">Content can\'t be empty</string>
     <string name="add_post">Add post</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Save</string>
+    <string name="google_play_unavailable">Google Api Unavailable</string>
+    <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
+    <string name="notification_new_post">%1$s posted a new post:</string>
+    <string name="channel_remote_name">Server notifications</string>
+    <string name="channel_remote_description">Notifications from remote server</string>
 </resources>

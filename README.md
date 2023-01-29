@@ -29,3 +29,5 @@
   + Details
 * «SQL и SQLite»
   + SQL
+* «Библиотека Room»
+  + Room
