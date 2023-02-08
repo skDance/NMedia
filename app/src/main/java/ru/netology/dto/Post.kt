@@ -9,7 +9,7 @@ data class Post(
     val likesCount: Int,
     val sharesCount: Int,
     val viewsCount: Int,
-    val videoUrl: String = "empty",
+//    val videoUrl: String = "empty",
 ) {
     fun setCount(count: Int): String {
         val stringCount = count.toString()

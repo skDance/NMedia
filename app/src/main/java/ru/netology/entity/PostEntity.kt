@@ -15,7 +15,7 @@ data class PostEntity(
     val likesCount: Int = 0,
     val sharesCount: Int = 0,
     val viewsCount: Int = 0,
-    val videoUrl: String = "empty"
+//    val videoUrl: String = "empty"
 ) {
 
     companion object {
@@ -29,7 +29,7 @@ data class PostEntity(
                 dto.likesCount,
                 dto.sharesCount,
                 dto.viewsCount,
-                dto.videoUrl
+//                dto.videoUrl
             )
     }
 }

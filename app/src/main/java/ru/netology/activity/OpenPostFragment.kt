@@ -33,21 +33,21 @@ class OpenPostFragment : Fragment() {
             false
         )
 
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
+        viewModel.data.observe(viewLifecycleOwner) {
             viewModel.openPostById.observe(viewLifecycleOwner) { postId ->
-                val post = posts.find { it.id == postId }
+                val post = it.posts?.find { it.id == postId }
                 with(binding.scrollPostContent) {
-                    post?.let {
-                        postsAuthor.text = it.author
-                        postsContent.text = it.content
-                        postsPublished.text = it.published
-                        likesButton.text = it.setCount(it.likesCount)
-                        shareButton.text = it.setCount(it.sharesCount)
-                        viewsButton.text = it.setCount(it.viewsCount)
-                        likesButton.isChecked = it.likedByMe
+                    post?.let { post ->
+                        postsAuthor.text = post.author
+                        postsContent.text = post.content
+                        postsPublished.text = post.published
+                        likesButton.text = post.setCount(post.likesCount)
+                        shareButton.text = post.setCount(post.sharesCount)
+                        viewsButton.text = post.setCount(post.viewsCount)
+                        likesButton.isChecked = post.likedByMe
 
                         likesButton.setOnClickListener {
-                            viewModel.likeById(post.id)
+                            viewModel.likeById(post)
                         }
                         shareButton.setOnClickListener {
                             viewModel.shareById(post.id)
@@ -87,12 +87,12 @@ class OpenPostFragment : Fragment() {
                             }.show()
                         }
 
-                        videoFrame.isVisible = post.videoUrl != "empty"
+                        videoFrame.isVisible = false
 
-                        videoFrame.setOnClickListener {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
-                            startActivity(intent)
-                        }
+//                        videoFrame.setOnClickListener {
+//                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
+//                            startActivity(intent)
+//                        }
                     }
                 }
             }

@@ -34,3 +34,6 @@
 * «Notifications & Pushes»
   + Exceptions
   + New Post
+* «Сетевые запросы: Main Thread & Background»
+  + Likes
+  + Swipe to Refresh

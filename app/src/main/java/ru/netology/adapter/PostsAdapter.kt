@@ -72,7 +72,7 @@ class PostViewHolder(
                 }.show()
             }
 
-            videoFrame.isVisible = post.videoUrl != "empty"
+            videoFrame.isVisible = false
 
             videoFrame.setOnClickListener {
                 onInteractionListener.onPlayVideo(post)
