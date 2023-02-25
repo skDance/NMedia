@@ -13,6 +13,7 @@ import ru.netology.util.SingleLiveEvent
 private val empty = Post(
     id = 0,
     author = "",
+    authorAvatar = "",
     published = "",
     content = "",
     likesCount = 0,

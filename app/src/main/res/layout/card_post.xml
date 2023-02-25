@@ -10,10 +10,11 @@
 
     <ImageView
         android:id="@+id/post_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="post_avatar"
+        android:scaleType="centerCrop"
         android:src="@drawable/netology"
         app:layout_constraintBottom_toBottomOf="@id/posts_barrier1"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="posts_content" />
+        app:constraint_referenced_ids="posts_content, attachmentImage" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/likesButton"
@@ -120,7 +121,7 @@
         android:clickable="true"
         android:focusable="true"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/posts_barrier2"
+        app:layout_constraintBottom_toTopOf="@id/attachmentImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/posts_content">
@@ -139,5 +140,17 @@
             app:srcCompat="@drawable/ic_baseline_play_circle_24" />
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/attachmentImage"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:src="@drawable/ic_avatar_placeholder"
+        app:layout_constraintBottom_toTopOf="@id/posts_barrier2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/videoFrame" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

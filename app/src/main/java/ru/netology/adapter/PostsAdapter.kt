@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.R
 import ru.netology.databinding.CardPostBinding
 import ru.netology.dto.Post
@@ -38,11 +39,12 @@ class PostViewHolder(
     private val binding: CardPostBinding,
     private val onInteractionListener: onInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
+    val dateFormat = java.text.SimpleDateFormat("HH:mm dd.MM.yyyy")
     fun bind(post: Post) {
         binding.apply {
             postsAuthor.text = post.author
             postsContent.text = post.content
-            postsPublished.text = post.published
+            postsPublished.text = dateFormat.format(java.util.Date(post.published.toLong() * 1000))
             likesButton.text = post.setCount(post.likesCount)
             shareButton.text = post.setCount(post.sharesCount)
             viewsButton.text = post.setCount(post.viewsCount)
@@ -80,6 +82,26 @@ class PostViewHolder(
 
             cardPost.setOnClickListener {
                 onInteractionListener.openPost(post)
+            }
+
+            Glide.with(postAvatar)
+                .load("http://10.0.2.2:10999/avatars/${post.authorAvatar}")
+                .placeholder(R.drawable.ic_avatar_placeholder)
+                .error(R.drawable.ic_image_error)
+                .circleCrop()
+                .timeout(10_000)
+                .into(postAvatar)
+
+            if (post.attachment == null) {
+                attachmentImage.isVisible = false
+            } else {
+                attachmentImage.isVisible = true
+                Glide.with(attachmentImage)
+                    .load("http://10.0.2.2:10999/images/${post.attachment.url}")
+                    .placeholder(R.drawable.ic_avatar_placeholder)
+                    .error(R.drawable.ic_image_error)
+                    .timeout(10_000)
+                    .into(attachmentImage)
             }
         }
     }
