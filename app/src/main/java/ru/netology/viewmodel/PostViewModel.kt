@@ -92,7 +92,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 override fun onSuccess(data: Post) {
                     _postCreated.postValue(Unit)
                 }
-
                 override fun onFailure(e: Exception) {}
             })
         }
