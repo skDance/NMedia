@@ -3,12 +3,14 @@ package ru.netology.dto
 data class Post(
     val id: Long,
     val author: String,
+    val authorAvatar: String,
     val published: String,
     val content: String,
     val likedByMe: Boolean,
     val likesCount: Int,
     val sharesCount: Int,
     val viewsCount: Int,
+    val attachment: Attachment? = null,
 //    val videoUrl: String = "empty",
 ) {
     fun setCount(count: Int): String {
@@ -32,3 +34,9 @@ data class Post(
         return "error"
     }
 }
+
+data class Attachment(
+    val url: String,
+    val description: String,
+    val type: String,
+)

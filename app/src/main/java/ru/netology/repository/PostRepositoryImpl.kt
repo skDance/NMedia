@@ -1,82 +1,74 @@
 package ru.netology.repository
 
-import androidx.lifecycle.Transformations
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import androidx.lifecycle.map
+import okio.IOException
+import ru.netology.api.PostApi
 import ru.netology.dao.PostDao
 import ru.netology.dto.Post
 import ru.netology.entity.PostEntity
-import java.util.concurrent.TimeUnit
+import ru.netology.error.ApiError
+import ru.netology.error.NetworkError
+import ru.netology.error.UnknownError
 
-class PostRepositoryImpl : PostRepository {
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
-    private val gson = Gson()
-    private val typeToken = object : TypeToken<List<Post>>() {}
+class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
+    override fun data() = postDao.getAll().map { it.map(PostEntity::toDto) }
 
-    companion object {
-        private const val BASE_URL = "http://10.0.2.2:10999"
-        private val jsonType = "application/json".toMediaType()
+    override suspend fun getAll() {
+        val response = PostApi.retrofitService.getAll()
+
+        if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
+        response.body() ?: throw java.lang.RuntimeException("body is null")
+        postDao.insert(response.body()!!.map { PostEntity.fromDto(it) })
     }
 
-    override fun getAll(): List<Post> {
-        val request: Request = Request.Builder()
-            .url("${BASE_URL}/api/slow/posts")
-            .build()
-
-        return client.newCall(request)
-            .execute()
-            .let { it.body?.string() ?: throw java.lang.RuntimeException("body is null") }
-            .let {
-                gson.fromJson(it, typeToken)
+    override suspend fun likeById(post: Post) {
+        postDao.likeById(post.id)
+        try {
+            val response = if (post.likedByMe) {
+                PostApi.retrofitService.dislikeById(post.id)
+            } else {
+                PostApi.retrofitService.likeById(post.id)
             }
-    }
-
-    override fun likeById(post: Post): Post {
-        val request: Request = if (post.likedByMe) {
-            Request.Builder()
-                .delete()
-                .url("${BASE_URL}/api/slow/posts/${post.id}/likes")
-                .build()
-        } else {
-            Request.Builder()
-                .post("".toRequestBody(jsonType))
-                .url("${BASE_URL}/api/slow/posts/${post.id}/likes")
-                .build()
+            if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
+            response.body() ?: throw java.lang.RuntimeException("body is null")
+        } catch (e: Exception) {
+            postDao.likeById(post.id)
         }
-        return client.newCall(request)
-            .execute()
-            .let { it.body?.string() ?: throw java.lang.RuntimeException("body is null") }
-            .let { gson.fromJson(it, Post::class.java) }
+
     }
 
     override fun shareById(id: Long) {
+        TODO("Not yet implemented")
     }
 
-    override fun removeById(id: Long) {
-        val request: Request = Request.Builder()
-            .delete()
-            .url("${BASE_URL}/api/slow/posts/$id")
-            .build()
+    override suspend fun removeById(post: Post) {
+        val oldPost = post
+        postDao.removeById(post.id)
 
-        client.newCall(request)
-            .execute()
-            .close()
+        try {
+            val response = PostApi.retrofitService.removeById(post.id)
+            if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
+            response.body() ?: throw java.lang.RuntimeException("body is null")
+        } catch (e: Exception) {
+            postDao.insert(PostEntity.fromDto(oldPost))
+        }
+
     }
 
-    override fun save(post: Post) {
-        val request: Request = Request.Builder()
-            .post(gson.toJson(post).toRequestBody(jsonType))
-            .url("${BASE_URL}/api/slow/posts")
-            .build()
+    override suspend fun save(post: Post) {
+        try {
+            val response = PostApi.retrofitService.save(post)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
 
-        client.newCall(request)
-            .execute()
-            .close()
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            postDao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
+
 }

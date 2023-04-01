@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import ru.netology.R
 import ru.netology.databinding.FragmentOpenPostBinding
 import ru.netology.viewmodel.PostViewModel
@@ -33,6 +34,8 @@ class OpenPostFragment : Fragment() {
             false
         )
 
+        val dateFormat = java.text.SimpleDateFormat("HH:mm dd.MM.yyyy")
+
         viewModel.data.observe(viewLifecycleOwner) {
             viewModel.openPostById.observe(viewLifecycleOwner) { postId ->
                 val post = it.posts?.find { it.id == postId }
@@ -40,7 +43,7 @@ class OpenPostFragment : Fragment() {
                     post?.let { post ->
                         postsAuthor.text = post.author
                         postsContent.text = post.content
-                        postsPublished.text = post.published
+                        postsPublished.text = dateFormat.format(java.util.Date(post.published.toLong() * 1000))
                         likesButton.text = post.setCount(post.likesCount)
                         shareButton.text = post.setCount(post.sharesCount)
                         viewsButton.text = post.setCount(post.viewsCount)
@@ -67,7 +70,7 @@ class OpenPostFragment : Fragment() {
                                     when (item.itemId) {
                                         R.id.remove -> {
                                             findNavController().navigateUp()
-                                            viewModel.removeById(post.id)
+                                            viewModel.removeById(post)
                                             true
                                         }
                                         R.id.edit -> {
@@ -85,6 +88,26 @@ class OpenPostFragment : Fragment() {
                                     }
                                 }
                             }.show()
+                        }
+
+                        Glide.with(postAvatar)
+                            .load("http://10.0.2.2:10999/avatars/${post.authorAvatar}")
+                            .placeholder(R.drawable.ic_avatar_placeholder)
+                            .error(R.drawable.ic_image_error)
+                            .circleCrop()
+                            .timeout(10_000)
+                            .into(postAvatar)
+
+                        if (post.attachment == null) {
+                            attachmentImage.isVisible = false
+                        } else {
+                            attachmentImage.isVisible = true
+                            Glide.with(attachmentImage)
+                                .load("http://10.0.2.2:10999/images/${post.attachment.url}")
+                                .placeholder(R.drawable.ic_avatar_placeholder)
+                                .error(R.drawable.ic_image_error)
+                                .timeout(10_000)
+                                .into(attachmentImage)
                         }
 
                         videoFrame.isVisible = false

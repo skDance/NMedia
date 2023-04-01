@@ -42,7 +42,7 @@ android {
 
 dependencies {
     def core_version = "1.9.0"
-    def appcompat_version = "1.6.0"
+    def appcompat_version = "1.6.1"
     def mdc_version = "1.8.0"
     def constraintlayout_version = "2.1.4"
     def recyclerview_version = "1.2.1"
@@ -51,13 +51,14 @@ dependencies {
     def espresso_core_version = "3.5.1"
     def activity_version = "1.6.1"
     def lifecycle_version = "2.5.1"
-    def gson_version = "2.10.1"
     def nav_version = "2.5.3"
     def room_version = "2.5.0"
     def firebase_version = "31.2.0"
-    def play_services_base_version = "18.1.0"
-    def okhttp_version = "4.9.1"
+    def play_services_base_version = "18.2.0"
     def swiperefresh_version = "1.1.0"
+    def glide_version = "4.14.2"
+    def retrofit_version = "2.9.0"
+    def retrofitgson_version = "2.9.0"
 
     implementation "androidx.core:core-ktx:$core_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
@@ -67,7 +68,6 @@ dependencies {
     implementation "androidx.activity:activity-ktx:$activity_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "com.google.code.gson:gson:$gson_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation "androidx.room:room-runtime:$room_version"
@@ -75,8 +75,10 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:$firebase_version")
     implementation "com.google.firebase:firebase-messaging-ktx"
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swiperefresh_version"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"

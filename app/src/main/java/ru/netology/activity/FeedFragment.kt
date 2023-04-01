@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
@@ -58,7 +59,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRemove(post: Post) {
-                viewModel.removeById(post.id)
+                viewModel.removeById(post)
             }
 
             override fun onEdit(post: Post) {
@@ -76,11 +77,19 @@ class FeedFragment : Fragment() {
         })
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
+        viewModel.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
-            binding.errorGroup.isVisible = state.error
-            binding.emptyText.isVisible = state.empty
+            binding.swipeRefresh.isRefreshing = state.refreshing
+            if (state.error) {
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.retry_loading) { viewModel.loadPosts() }
+                    .show()
+            }
+        }
+
+        viewModel.data.observe(viewLifecycleOwner) { data ->
+            adapter.submitList(data.posts)
+            binding.emptyText.isVisible = data.empty
         }
 
         val itemAnimator = binding.list.itemAnimator
@@ -88,9 +97,7 @@ class FeedFragment : Fragment() {
             itemAnimator.supportsChangeAnimations = false
         }
 
-        binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
-        }
+        binding.swipeRefresh.setOnRefreshListener { viewModel.refreshPosts() }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)

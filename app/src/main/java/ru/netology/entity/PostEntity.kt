@@ -18,6 +18,8 @@ data class PostEntity(
 //    val videoUrl: String = "empty"
 ) {
 
+    fun toDto() = Post(id,author,content,published, content,likedByMe,likesCount, sharesCount, viewsCount)
+
     companion object {
         fun fromDto(dto: Post) =
             PostEntity(
