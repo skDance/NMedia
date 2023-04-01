@@ -70,7 +70,7 @@ class OpenPostFragment : Fragment() {
                                     when (item.itemId) {
                                         R.id.remove -> {
                                             findNavController().navigateUp()
-                                            viewModel.removeById(post.id)
+                                            viewModel.removeById(post)
                                             true
                                         }
                                         R.id.edit -> {

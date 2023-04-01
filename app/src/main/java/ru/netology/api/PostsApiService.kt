@@ -1,29 +1,30 @@
 package ru.netology.api
 
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 import ru.netology.dto.Post
 
 private const val BASE_URL = "http://10.0.2.2:10999/api/slow/"
 
 interface PostsApiService {
     @GET("posts")
-    fun getAll(): Call<List<Post>>
+    suspend fun getAll(): Response<List<Post>>
 
     @POST("posts/{postId}/likes")
-    fun likeById(@Path("postId") id: Long): Call<Post>
+    suspend fun likeById(@Path("postId") id: Long): Response<Post>
+
+    @DELETE("posts/{id}/likes")
+    suspend fun dislikeById(@Path("id") id: Long): Response<Post>
 
     @DELETE("posts/{postId}")
-    fun removeById(@Path("postId") id: Long): Call<Post>
+    suspend fun removeById(@Path("postId") id: Long): Response<Post>
 
     @POST("posts")
-    fun save(): Call<Post>
+    suspend fun save(@Body post: Post): Response<Post>
 }
 
 object PostApi {

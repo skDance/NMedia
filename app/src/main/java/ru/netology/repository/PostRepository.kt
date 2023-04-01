@@ -1,16 +1,13 @@
 package ru.netology.repository
 
+import androidx.lifecycle.LiveData
 import ru.netology.dto.Post
 
 interface PostRepository {
-    fun getAll(callback: Callback<List<Post>>)
-    fun likeById(post: Post, callback: Callback<Post>)
+    fun data(): LiveData<List<Post>>
+    suspend fun getAll()
+    suspend fun likeById(post: Post)
     fun shareById(id: Long)
-    fun removeById(id: Long, callback: Callback<Post>)
-    fun save(post: Post, callback: Callback<Post>)
-
-    interface Callback<T> {
-        fun onSuccess(data: T)
-        fun onFailure(e: Exception)
-    }
+    suspend fun removeById(post: Post)
+    suspend fun save(post: Post)
 }
