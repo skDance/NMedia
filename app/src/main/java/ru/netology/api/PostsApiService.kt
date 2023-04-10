@@ -1,6 +1,5 @@
 package ru.netology.api
 
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,6 +12,9 @@ private const val BASE_URL = "http://10.0.2.2:10999/api/slow/"
 interface PostsApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
+
+    @GET("posts/{id}/newer")
+    suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
 
     @POST("posts/{postId}/likes")
     suspend fun likeById(@Path("postId") id: Long): Response<Post>

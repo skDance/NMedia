@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
@@ -92,6 +93,21 @@ class FeedFragment : Fragment() {
             binding.emptyText.isVisible = data.empty
         }
 
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            println("Newer count: $it")
+            if(it == 1) {
+                binding.recentEntries.isVisible = true
+            }
+        }
+
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                if (positionStart == 0) {
+                    binding.list.smoothScrollToPosition(0)
+                }
+            }
+        })
+
         val itemAnimator = binding.list.itemAnimator
         if (itemAnimator is DefaultItemAnimator) {
             itemAnimator.supportsChangeAnimations = false
@@ -101,6 +117,11 @@ class FeedFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+        }
+
+        binding.recentEntries.setOnClickListener {
+            viewModel.showRecentEntries()
+            binding.recentEntries.isVisible = false
         }
 
         binding.swipeRefresh.setOnRefreshListener {

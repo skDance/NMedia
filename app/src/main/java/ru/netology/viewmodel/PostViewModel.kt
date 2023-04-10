@@ -2,6 +2,8 @@ package ru.netology.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.db.AppDb
 import ru.netology.dto.Post
@@ -31,7 +33,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val data: LiveData<FeedModel> = repository.data().map { FeedModel(it, it.isEmpty()) }
+    val data: LiveData<FeedModel> = repository.data().map(::FeedModel)
+        .asLiveData(Dispatchers.Default)
 
     private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
@@ -39,6 +42,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _postCreated
     val openPostById: MutableLiveData<Long> by lazy {
         MutableLiveData<Long>()
+    }
+
+    val newerCount: LiveData<Int> = data.switchMap {
+        val id = it.posts?.firstOrNull()?.id ?: 0L
+
+        repository.getNewer(id).asLiveData(Dispatchers.Default)
     }
 
     init {
@@ -66,6 +75,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     }
+
+    fun showRecentEntries() = viewModelScope.launch { repository.showRecentEntries() }
 
     fun likeById(post: Post) = viewModelScope.launch {
         try {
