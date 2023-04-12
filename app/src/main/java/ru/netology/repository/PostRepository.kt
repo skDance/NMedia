@@ -1,11 +1,13 @@
 package ru.netology.repository
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.dto.Post
 
 interface PostRepository {
-    fun data(): LiveData<List<Post>>
+    fun data(): Flow<List<Post>>
     suspend fun getAll()
+    fun getNewer(id: Long): Flow<Int>
+    suspend fun showRecentEntries()
     suspend fun likeById(post: Post)
     fun shareById(id: Long)
     suspend fun removeById(post: Post)

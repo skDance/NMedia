@@ -15,6 +15,7 @@ data class PostEntity(
     val likesCount: Int = 0,
     val sharesCount: Int = 0,
     val viewsCount: Int = 0,
+    val hidden: Boolean = false,
 //    val videoUrl: String = "empty"
 ) {
 
@@ -35,3 +36,6 @@ data class PostEntity(
             )
     }
 }
+
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)
