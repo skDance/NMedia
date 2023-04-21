@@ -43,7 +43,8 @@ class OpenPostFragment : Fragment() {
                     post?.let { post ->
                         postsAuthor.text = post.author
                         postsContent.text = post.content
-                        postsPublished.text = dateFormat.format(java.util.Date(post.published.toLong() * 1000))
+                        postsPublished.text =
+                            dateFormat.format(java.util.Date(post.published.toLong() * 1000))
                         likesButton.text = post.setCount(post.likesCount)
                         shareButton.text = post.setCount(post.sharesCount)
                         viewsButton.text = post.setCount(post.viewsCount)

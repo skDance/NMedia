@@ -2,6 +2,7 @@ package ru.netology.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.netology.dto.Post
+import ru.netology.model.PhotoModel
 
 interface PostRepository {
     fun data(): Flow<List<Post>>
@@ -12,4 +13,5 @@ interface PostRepository {
     fun shareById(id: Long)
     suspend fun removeById(post: Post)
     suspend fun save(post: Post)
+    suspend fun saveWithAttachment(post: Post, photo: PhotoModel)
 }

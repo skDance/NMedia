@@ -5,14 +5,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.api.PostApi
 import ru.netology.dao.PostDao
+import ru.netology.dto.Attachment
+import ru.netology.dto.AttachmentType
+import ru.netology.dto.Media
 import ru.netology.dto.Post
 import ru.netology.entity.PostEntity
 import ru.netology.entity.toEntity
 import ru.netology.error.ApiError
 import ru.netology.error.NetworkError
 import ru.netology.error.UnknownError
+import ru.netology.model.PhotoModel
 import java.io.IOException
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
@@ -98,6 +104,35 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         } catch (e: Exception) {
             throw UnknownError
         }
+    }
+
+    override suspend fun saveWithAttachment(post: Post, photo: PhotoModel) {
+        try {
+            val media = upload(photo)
+
+            val response = PostApi.retrofitService.save(
+                post.copy(
+                    attachment = Attachment(media.id, AttachmentType.IMAGE)
+                )
+            )
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            postDao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    private suspend fun upload(photo: PhotoModel): Media {
+        val response = PostApi.retrofitService.uploadPhoto(
+            MultipartBody.Part.createFormData("file", photo.file.name, photo.file.asRequestBody())
+        )
+        return response.body() ?: throw ApiError(response.code(), response.message())
     }
 
 }

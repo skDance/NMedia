@@ -19,13 +19,19 @@ interface onInteractionListener {
     fun onEdit(post: Post) {}
     fun onPlayVideo(post: Post) {}
     fun openPost(post: Post) {}
+
+    fun openPicture(post: Post) {}
 }
 
 class PostsAdapter(
     private val onInteractionListener: onInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val binding = ru.netology.databinding.CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ru.netology.databinding.CardPostBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return PostViewHolder(binding, onInteractionListener)
     }
 
@@ -84,6 +90,10 @@ class PostViewHolder(
                 onInteractionListener.openPost(post)
             }
 
+            attachmentImage.setOnClickListener {
+                onInteractionListener.openPicture(post)
+            }
+
             Glide.with(postAvatar)
                 .load("http://10.0.2.2:10999/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_avatar_placeholder)
@@ -97,7 +107,7 @@ class PostViewHolder(
             } else {
                 attachmentImage.isVisible = true
                 Glide.with(attachmentImage)
-                    .load("http://10.0.2.2:10999/images/${post.attachment.url}")
+                    .load("http://10.0.2.2:10999/media/${post.attachment.url}")
                     .placeholder(R.drawable.ic_avatar_placeholder)
                     .error(R.drawable.ic_image_error)
                     .timeout(10_000)

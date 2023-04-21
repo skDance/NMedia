@@ -9,6 +9,7 @@ import ru.netology.db.AppDb
 import ru.netology.dto.Post
 import ru.netology.model.FeedModel
 import ru.netology.model.FeedModelState
+import ru.netology.model.PhotoModel
 import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryImpl
 import ru.netology.util.SingleLiveEvent
@@ -37,12 +38,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         .asLiveData(Dispatchers.Default)
 
     private val edited = MutableLiveData(empty)
+
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
+
+    val openPicture: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
     val openPostById: MutableLiveData<Long> by lazy {
         MutableLiveData<Long>()
     }
+    val _photoState = MutableLiveData<PhotoModel?>()
+    val photoState: LiveData<PhotoModel?>
+        get() = _photoState
 
     val newerCount: LiveData<Int> = data.switchMap {
         val id = it.posts?.firstOrNull()?.id ?: 0L
@@ -96,11 +106,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun save() = viewModelScope.launch {
-        edited.value?.let {
-            repository.save(it)
+    fun save() {
+        edited.value?.let { post ->
+            viewModelScope.launch {
+                try {
+                    photoState.value?.let {
+                        repository.saveWithAttachment(post, it)
+                    } ?: repository.save(post)
+                    _state.value = FeedModelState()
+
+                    edited.value = empty
+                } catch (e: Exception) {
+                    _state.value = FeedModelState(error = true)
+                }
+            }
         }
-        edited.value = empty
     }
 
     fun edit(post: Post) {
@@ -113,5 +133,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         edited.value = edited.value?.copy(content = text)
+    }
+
+    fun changePhoto(photoModel: PhotoModel?) {
+        _photoState.value = photoModel
     }
 }

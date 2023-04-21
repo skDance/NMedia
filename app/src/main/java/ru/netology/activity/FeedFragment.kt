@@ -71,6 +71,11 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(R.id.action_feedFragment_to_editPostFragment, bundle)
             }
 
+            override fun openPicture(post: Post) {
+                viewModel.openPicture.value = post.attachment?.url
+                findNavController().navigate(R.id.action_feedFragment_to_openPictureFragment)
+            }
+
 //            override fun onPlayVideo(post: Post) {
 //                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
 //                startActivity(intent)
@@ -95,12 +100,12 @@ class FeedFragment : Fragment() {
 
         viewModel.newerCount.observe(viewLifecycleOwner) {
             println("Newer count: $it")
-            if(it == 1) {
+            if (it == 1) {
                 binding.recentEntries.isVisible = true
             }
         }
 
-        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 if (positionStart == 0) {
                     binding.list.smoothScrollToPosition(0)
