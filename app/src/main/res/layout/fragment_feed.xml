@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/purple_50"
     tools:context=".activity.FeedFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,12 +19,12 @@
             android:layout_marginTop="14dp"
             android:backgroundTint="@color/purple_200"
             android:text="@string/recentEntries"
+            android:textAllCaps="false"
             android:textSize="12dp"
+            android:visibility="gone"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_north_24"
             app:iconSize="16dp"
-            android:visibility="gone"
-            android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -1,12 +1,13 @@
 package ru.netology.activity
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.launch
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,14 +18,17 @@ import com.google.android.material.snackbar.Snackbar
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
+import ru.netology.auth.AppAuth
 import ru.netology.databinding.FragmentFeedBinding
 import ru.netology.dto.Post
+import ru.netology.viewmodel.AuthViewModel
 import ru.netology.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +48,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post)
+                if (!authViewModel.authorized) showDialog("signIn") else viewModel.likeById(post)
             }
 
             override fun onShare(post: Post) {
@@ -121,7 +125,11 @@ class FeedFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener { viewModel.refreshPosts() }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (!authViewModel.authorized) {
+                showDialog("signIn")
+            } else {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }
         }
 
         binding.recentEntries.setOnClickListener {
@@ -134,7 +142,73 @@ class FeedFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
+        var menuProvider: MenuProvider? = null
+
+        authViewModel.state.observe(viewLifecycleOwner) { authState ->
+            menuProvider?.let { requireActivity().removeMenuProvider(it) }
+
+            requireActivity().addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.main_manu, menu)
+
+                    menu.setGroupVisible(R.id.authorized, authViewModel.authorized)
+                    menu.setGroupVisible(R.id.unauthorized, !authViewModel.authorized)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.signout -> {
+                            showDialog("signOut")
+                            true
+                        }
+                        R.id.signin -> {
+                            findNavController().navigate(R.id.action_feedFragment_to_authorizationFragment)
+                            true
+                        }
+                        R.id.signup -> {
+                            findNavController().navigate(R.id.action_feedFragment_to_registrationFragment)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            }.apply { menuProvider = this }, viewLifecycleOwner)
+        }
+
         return binding.root
     }
 
+    fun showDialog(action: String) {
+        val dialog = AlertDialog.Builder(context)
+        when (action) {
+            "signIn" -> {
+                dialog
+                    .setTitle(R.string.dialog_auth_title)
+                    .setMessage(R.string.dialog_auth_text)
+                    .setPositiveButton(R.string.dialog_positive_button) { dialog, _ ->
+                        findNavController().navigate(R.id.action_feedFragment_to_authorizationFragment)
+                        dialog.cancel()
+                    }
+                    .setNegativeButton(R.string.dialog_negative_button) { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    .create()
+            }
+            "signOut" -> {
+                dialog
+                    .setTitle(R.string.dialog_logout_title)
+                    .setPositiveButton(R.string.dialog_positive_button) { dialog, _ ->
+                        AppAuth.getInstance().clear()
+                        dialog.cancel()
+                    }
+                    .setNegativeButton(R.string.dialog_negative_button) { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    .create()
+            }
+        }
+
+        dialog.show()
+    }
 }
+

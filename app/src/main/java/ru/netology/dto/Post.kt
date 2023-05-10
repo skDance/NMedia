@@ -11,6 +11,8 @@ data class Post(
     val sharesCount: Int,
     val viewsCount: Int,
     val attachment: Attachment? = null,
+    val authorId: Long,
+    val ownedByMe: Boolean = false,
 //    val videoUrl: String = "empty",
 ) {
     fun setCount(count: Int): String {

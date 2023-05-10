@@ -3,8 +3,10 @@ package ru.netology.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.auth.AppAuth
 import ru.netology.db.AppDb
 import ru.netology.dto.Post
 import ru.netology.model.FeedModel
@@ -23,6 +25,7 @@ private val empty = Post(
     likesCount = 0,
     sharesCount = 0,
     viewsCount = 0,
+    authorId = 0L,
     likedByMe = false
 )
 
@@ -34,8 +37,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val data: LiveData<FeedModel> = repository.data().map(::FeedModel)
-        .asLiveData(Dispatchers.Default)
+    val data: LiveData<FeedModel> = AppAuth.getInstance().authStateFlow.flatMapLatest { (myId, _) ->
+        repository.data()
+            .map { posts ->
+                FeedModel(
+                    posts.map { post -> post.copy(ownedByMe = post.authorId == myId) },
+                    posts.isEmpty()
+                )
+            }
+
+    }.asLiveData(Dispatchers.Default)
 
     private val edited = MutableLiveData(empty)
 

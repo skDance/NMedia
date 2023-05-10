@@ -11,12 +11,14 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val author: String,
+    val authorAvatar: String,
     val content: String,
     val published: String,
     val likedByMe: Boolean,
     val likesCount: Int = 0,
     val sharesCount: Int = 0,
     val viewsCount: Int = 0,
+    val authorId: Long,
     @Embedded
     val attachment: Attachment? = null,
     val hidden: Boolean = false,
@@ -24,30 +26,33 @@ data class PostEntity(
 ) {
 
     fun toDto() = Post(
-        id,
-        author,
-        content,
-        published,
-        content,
-        likedByMe,
-        likesCount,
-        sharesCount,
-        viewsCount,
-        attachment
+        id = id,
+        author = author,
+        authorAvatar = authorAvatar,
+        content = content,
+        published = published,
+        likedByMe = likedByMe,
+        likesCount = likesCount,
+        sharesCount = sharesCount,
+        viewsCount = viewsCount,
+        authorId = authorId,
+        attachment = attachment,
     )
 
     companion object {
         fun fromDto(dto: Post) =
             PostEntity(
-                dto.id,
-                dto.author,
-                dto.content,
-                dto.published,
-                dto.likedByMe,
-                dto.likesCount,
-                dto.sharesCount,
-                dto.viewsCount,
-                dto.attachment,
+                id = dto.id,
+                author = dto.author,
+                authorAvatar = dto.authorAvatar,
+                content = dto.content,
+                published = dto.published,
+                likedByMe = dto.likedByMe,
+                likesCount = dto.likesCount,
+                sharesCount = dto.sharesCount,
+                viewsCount = dto.viewsCount,
+                authorId = dto.authorId,
+                attachment = dto.attachment,
 //                dto.videoUrl
             )
     }

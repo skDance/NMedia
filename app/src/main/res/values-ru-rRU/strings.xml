@@ -18,4 +18,15 @@
     <string name="retry_loading">Повторить</string>
     <string name="empty_posts">Постов нет.\\nЕсли создадите новый пост, то он появится здесь</string>
     <string name="recentEntries">Свежие записи</string>
+    <string name="sing_in">Войти</string>
+    <string name="error_signin">Что-то пошло не так. Повторите попытку.</string>
+    <string name="error_signin_log_or_pas">Логин и пароль не могут быть пустыми</string>
+    <string name="reg_error_password_confirm">Необходимо подтвердить пароль</string>
+    <string name="reg_error_password_confirm_null">Необходимо подтвердить пароль</string>
+    <string name="dialog_auth_title">Требуется авторизация</string>
+    <string name="dialog_auth_negative_button">Нет</string>
+    <string name="dialog_positive_button">Да</string>
+    <string name="dialog_negative_button">Нет</string>
+    <string name="dialog_auth_text">Войти?</string>
+    <string name="dialog_logout_title">Вы уверены, что хотите выйти?</string>
 </resources>

@@ -61,6 +61,7 @@ class PostViewHolder(
             shareButton.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
+            menuButton.isVisible = post.ownedByMe
             menuButton.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)

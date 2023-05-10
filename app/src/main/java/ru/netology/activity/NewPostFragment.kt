@@ -30,20 +30,21 @@ class NewPostFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
-    private val photoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        when (it.resultCode) {
-            ImagePicker.RESULT_ERROR -> Toast.makeText(
-                requireContext(),
-                "Photo picker error",
-                Toast.LENGTH_SHORT
-            ).show()
-            Activity.RESULT_OK -> {
-                val uri = it.data?.data ?: return@registerForActivityResult
-                val file = uri?.toFile()
-                viewModel.changePhoto(PhotoModel(uri, file))
+    private val photoLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                ImagePicker.RESULT_ERROR -> Toast.makeText(
+                    requireContext(),
+                    "Photo picker error",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Activity.RESULT_OK -> {
+                    val uri = it.data?.data ?: return@registerForActivityResult
+                    val file = uri?.toFile()
+                    viewModel.changePhoto(PhotoModel(uri, file))
+                }
             }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +63,7 @@ class NewPostFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                when(menuItem.itemId) {
+                when (menuItem.itemId) {
                     R.id.save -> {
                         viewModel.changeContent(binding.edit.text.toString())
                         viewModel.save()
@@ -74,7 +75,7 @@ class NewPostFragment : Fragment() {
 
         }, viewLifecycleOwner)
 
-        viewModel.photoState.observe(viewLifecycleOwner) {photoModel ->
+        viewModel.photoState.observe(viewLifecycleOwner) { photoModel ->
             if (photoModel == null) {
                 binding.photoContainer.isVisible = false
                 return@observe
@@ -83,7 +84,7 @@ class NewPostFragment : Fragment() {
             binding.preview.setImageURI(photoModel.uri)
         }
 
-        binding.removePhoto.setOnClickListener{
+        binding.removePhoto.setOnClickListener {
             viewModel.changePhoto(null)
         }
 
@@ -92,7 +93,7 @@ class NewPostFragment : Fragment() {
             viewModel.loadPosts()
             findNavController().navigateUp()
         }
-        binding.pickPhoto.setOnClickListener{
+        binding.pickPhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
                 .cameraOnly()
@@ -100,7 +101,7 @@ class NewPostFragment : Fragment() {
                 .createIntent(photoLauncher::launch)
         }
 
-        binding.takePhoto.setOnClickListener{
+        binding.takePhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
                 .galleryOnly()
