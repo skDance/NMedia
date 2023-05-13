@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import ru.netology.api.PostApi
+import ru.netology.api.Api
 import ru.netology.auth.AuthState
 import ru.netology.dao.PostDao
 import ru.netology.dto.Attachment
@@ -26,7 +26,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     override fun data() = postDao.getAll().map { it.map(PostEntity::toDto) }
 
     override suspend fun getAll() {
-        val response = PostApi.service.getAll()
+        val response = Api.service.getAll()
 
         if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
         response.body() ?: throw java.lang.RuntimeException("body is null")
@@ -37,7 +37,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         while (true) {
             try {
                 delay(10_000)
-                val response = PostApi.service.getNewer(id)
+                val response = Api.service.getNewer(id)
                 val posts = response.body().orEmpty()
 
                 emit(posts.size)
@@ -61,9 +61,9 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         postDao.likeById(post.id)
         try {
             val response = if (post.likedByMe) {
-                PostApi.service.dislikeById(post.id)
+                Api.service.dislikeById(post.id)
             } else {
-                PostApi.service.likeById(post.id)
+                Api.service.likeById(post.id)
             }
             if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
             response.body() ?: throw java.lang.RuntimeException("body is null")
@@ -82,7 +82,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         postDao.removeById(post.id)
 
         try {
-            val response = PostApi.service.removeById(post.id)
+            val response = Api.service.removeById(post.id)
             if (!response.isSuccessful) throw java.lang.RuntimeException("api error")
             response.body() ?: throw java.lang.RuntimeException("body is null")
         } catch (e: Exception) {
@@ -93,7 +93,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post) {
         try {
-            val response = PostApi.service.save(post)
+            val response = Api.service.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -111,7 +111,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         try {
             val media = upload(photo)
 
-            val response = PostApi.service.save(
+            val response = Api.service.save(
                 post.copy(
                     attachment = Attachment(media.id, AttachmentType.IMAGE)
                 )
@@ -130,14 +130,14 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
 
     private suspend fun upload(photo: PhotoModel): Media {
-        val response = PostApi.service.uploadPhoto(
+        val response = Api.service.uploadPhoto(
             MultipartBody.Part.createFormData("file", photo.file.name, photo.file.asRequestBody())
         )
         return response.body() ?: throw ApiError(response.code(), response.message())
     }
 
     override suspend fun singIn(login: String, pass: String): AuthState {
-        val response = PostApi.service.updateUser(login, pass)
+        val response = Api.service.updateUser(login, pass)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
@@ -145,7 +145,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
 
     override suspend fun register(login: String, pass: String, name: String): AuthState {
-        val response = PostApi.service.registerUser(login, pass, name)
+        val response = Api.service.registerUser(login, pass, name)
         if (!response.isSuccessful) throw ApiError(response.code(), response.message())
         return response.body() ?: throw ApiError(response.code(), response.message())
     }

@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.R
 import ru.netology.activity.NewPostFragment.Companion.textArg
 
@@ -45,6 +46,10 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 return
             }
             Toast.makeText(this@AppActivity, "Google Api Unavailable", Toast.LENGTH_LONG).show()
+        }
+
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            println(it)
         }
     }
 }

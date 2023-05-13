@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "ru.netology"
         minSdk 23
-        targetSdk 33
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -89,6 +89,7 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttplogging_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
 
