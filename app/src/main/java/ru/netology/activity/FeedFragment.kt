@@ -24,11 +24,15 @@ import ru.netology.dto.Post
 import ru.netology.viewmodel.AuthViewModel
 import ru.netology.viewmodel.PostViewModel
 
+private const val SING_IN = "signIn"
+private const val SING_OUT = "signOut"
+
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
     private val authViewModel: AuthViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +52,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if (!authViewModel.authorized) showDialog("signIn") else viewModel.likeById(post)
+                if (!authViewModel.authorized) showDialog(SING_IN) else viewModel.likeById(post)
             }
 
             override fun onShare(post: Post) {
@@ -126,7 +130,7 @@ class FeedFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             if (!authViewModel.authorized) {
-                showDialog("signIn")
+                showDialog(SING_IN)
             } else {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             }
@@ -158,7 +162,7 @@ class FeedFragment : Fragment() {
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     return when (menuItem.itemId) {
                         R.id.signout -> {
-                            showDialog("signOut")
+                            showDialog(SING_OUT)
                             true
                         }
                         R.id.signin -> {
@@ -181,7 +185,7 @@ class FeedFragment : Fragment() {
     fun showDialog(action: String) {
         val dialog = AlertDialog.Builder(context)
         when (action) {
-            "signIn" -> {
+            SING_IN -> {
                 dialog
                     .setTitle(R.string.dialog_auth_title)
                     .setMessage(R.string.dialog_auth_text)
@@ -194,7 +198,7 @@ class FeedFragment : Fragment() {
                     }
                     .create()
             }
-            "signOut" -> {
+            SING_OUT -> {
                 dialog
                     .setTitle(R.string.dialog_logout_title)
                     .setPositiveButton(R.string.dialog_positive_button) { dialog, _ ->
