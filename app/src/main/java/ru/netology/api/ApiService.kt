@@ -1,47 +1,12 @@
 package ru.netology.api
 
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import ru.netology.BuildConfig
-import ru.netology.auth.AppAuth
 import ru.netology.auth.AuthState
 import ru.netology.dto.Media
 import ru.netology.dto.Post
 import ru.netology.dto.PushToken
-
-private const val BASE_URL = "http://10.0.2.2:10999/api/slow/"
-
-private val logging = HttpLoggingInterceptor().apply {
-    if (BuildConfig.DEBUG) {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-}
-
-private val okhttp = OkHttpClient.Builder()
-    .addInterceptor(logging)
-    .addInterceptor { chain ->
-        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
-            chain
-                .request()
-                .newBuilder()
-                .addHeader("Authorization", token)
-                .build()
-                .apply { return@addInterceptor chain.proceed(this) }
-        }
-        return@addInterceptor chain.proceed(chain.request())
-    }
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl(BASE_URL)
-    .client(okhttp)
-    .build()
 
 interface ApiService {
     @GET("posts")
@@ -83,10 +48,4 @@ interface ApiService {
         @Field("pass") pass: String,
         @Field("name") name: String
     ): Response<AuthState>
-}
-
-object Api {
-    val service: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
 }

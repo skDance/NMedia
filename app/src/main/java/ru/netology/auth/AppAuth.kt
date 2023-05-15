@@ -4,16 +4,26 @@ import android.content.Context
 import androidx.core.content.edit
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import ru.netology.api.Api
+import ru.netology.api.ApiService
 import ru.netology.dto.PushToken
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(context: Context) {
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext
+    private val context: Context
+    ) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _authStateFlow = MutableStateFlow(AuthState())
@@ -55,11 +65,17 @@ class AppAuth private constructor(context: Context) {
         sendPushToken()
     }
 
+    @InstallIn(SingletonComponent::class)
+    @EntryPoint
+    interface AppAuthEntryPoint {
+        fun getApiService(): ApiService
+    }
     fun sendPushToken(token: String? = null) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
-                Api.service.saveToken(pushToken)
+                val entryPoint = EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
+                entryPoint.getApiService().saveToken(pushToken)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -67,24 +83,8 @@ class AppAuth private constructor(context: Context) {
     }
 
     companion object {
-
         const val ID = "id"
         const val TOKEN = "token"
-
-        @Volatile
-        private var INSTANCE: AppAuth? = null
-
-        fun init(context: Context) {
-            synchronized(this) {
-                INSTANCE = AppAuth(context)
-            }
-        }
-
-        fun getInstance(): AppAuth {
-            return synchronized(this) {
-                requireNotNull(INSTANCE) { "Make init" }
-            }
-        }
     }
 }
 

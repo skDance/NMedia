@@ -1,20 +1,19 @@
 package ru.netology.activity
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import androidx.activity.result.launch
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
@@ -23,16 +22,19 @@ import ru.netology.databinding.FragmentFeedBinding
 import ru.netology.dto.Post
 import ru.netology.viewmodel.AuthViewModel
 import ru.netology.viewmodel.PostViewModel
+import javax.inject.Inject
 
 private const val SING_IN = "signIn"
 private const val SING_OUT = "signOut"
 
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+
+    private val viewModel: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by viewModels()
 
+    @Inject
+    lateinit var appAuth: AppAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -148,7 +150,7 @@ class FeedFragment : Fragment() {
 
         var menuProvider: MenuProvider? = null
 
-        authViewModel.state.observe(viewLifecycleOwner) { authState ->
+        authViewModel.state.observe(viewLifecycleOwner) {
             menuProvider?.let { requireActivity().removeMenuProvider(it) }
 
             requireActivity().addMenuProvider(object : MenuProvider {
@@ -202,7 +204,7 @@ class FeedFragment : Fragment() {
                 dialog
                     .setTitle(R.string.dialog_logout_title)
                     .setPositiveButton(R.string.dialog_positive_button) { dialog, _ ->
-                        AppAuth.getInstance().clear()
+                        appAuth.clear()
                         dialog.cancel()
                     }
                     .setNegativeButton(R.string.dialog_negative_button) { dialog, _ ->

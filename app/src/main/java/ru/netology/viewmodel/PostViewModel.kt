@@ -1,20 +1,19 @@
 package ru.netology.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.auth.AppAuth
-import ru.netology.db.AppDb
 import ru.netology.dto.Post
 import ru.netology.model.FeedModel
 import ru.netology.model.FeedModelState
 import ru.netology.model.PhotoModel
 import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryImpl
 import ru.netology.util.SingleLiveEvent
+import javax.inject.Inject
 
 private val empty = Post(
     id = 0,
@@ -29,15 +28,17 @@ private val empty = Post(
     likedByMe = false
 )
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    appAuth: AppAuth,
+) : ViewModel() {
 
     private val _state = MutableLiveData(FeedModelState())
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val data: LiveData<FeedModel> = AppAuth.getInstance().authStateFlow.flatMapLatest { (myId, _) ->
+    val data: LiveData<FeedModel> = appAuth.authStateFlow.flatMapLatest { (myId, _) ->
         repository.data()
             .map { posts ->
                 FeedModel(

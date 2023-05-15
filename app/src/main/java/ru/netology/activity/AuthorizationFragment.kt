@@ -7,19 +7,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.R
 import ru.netology.databinding.FragmentAuthorizationBinding
 import ru.netology.util.AndroidUtil
 import ru.netology.viewmodel.SignInViewModel
 
-
+@AndroidEntryPoint
 class AuthorizationFragment : Fragment() {
 
-    private val signInViewModel: SignInViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+
+    private val signInViewModel: SignInViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
