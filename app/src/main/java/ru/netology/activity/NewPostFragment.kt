@@ -10,7 +10,6 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +39,7 @@ class NewPostFragment : Fragment() {
                 ).show()
                 Activity.RESULT_OK -> {
                     val uri = it.data?.data ?: return@registerForActivityResult
-                    val file = uri?.toFile()
+                    val file = uri.toFile()
                     viewModel.changePhoto(PhotoModel(uri, file))
                 }
             }

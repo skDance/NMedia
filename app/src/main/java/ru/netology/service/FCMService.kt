@@ -85,7 +85,7 @@ class FCMService : FirebaseMessagingService() {
 
     private fun handlePush(pushContent: PushContent) {
         val notification = NotificationCompat.Builder(this, pushTokenChannelId)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.netology)
             .setContentText(pushContent.content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
