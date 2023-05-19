@@ -33,6 +33,5 @@ data class Post(
             }
             else -> return "${countArray[0]}${countArray[1]}${countArray[2]}.${countArray[3]}M"
         }
-        return "error"
     }
 }
