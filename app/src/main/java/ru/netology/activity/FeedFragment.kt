@@ -9,11 +9,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.R
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
@@ -49,7 +52,7 @@ class FeedFragment : Fragment() {
 
         val adapter = PostsAdapter(object : onInteractionListener {
             override fun openPost(post: Post) {
-                viewModel.openPostById.value = post.id
+                viewModel.openPost.value = post
                 findNavController().navigate(R.id.action_feedFragment_to_openPostFragment)
             }
 
@@ -103,17 +106,23 @@ class FeedFragment : Fragment() {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { data ->
-            adapter.submitList(data.posts)
-            binding.emptyText.isVisible = data.empty
-        }
-
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            println("Newer count: $it")
-            if (it == 1) {
-                binding.recentEntries.isVisible = true
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
             }
         }
+
+//        viewModel.data.observe(viewLifecycleOwner) { data ->
+//            adapter.submitList(data.posts)
+//            binding.emptyText.isVisible = data.empty
+//        }
+
+//        viewModel.newerCount.observe(viewLifecycleOwner) {
+//            println("Newer count: $it")
+//            if (it == 1) {
+//                binding.recentEntries.isVisible = true
+//            }
+//        }
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -205,6 +214,7 @@ class FeedFragment : Fragment() {
                     .setTitle(R.string.dialog_logout_title)
                     .setPositiveButton(R.string.dialog_positive_button) { dialog, _ ->
                         appAuth.clear()
+                        viewModel.data
                         dialog.cancel()
                     }
                     .setNegativeButton(R.string.dialog_negative_button) { dialog, _ ->

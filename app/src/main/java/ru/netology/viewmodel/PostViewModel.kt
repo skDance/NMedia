@@ -1,14 +1,15 @@
 package ru.netology.viewmodel
 
 import androidx.lifecycle.*
+import androidx.lifecycle.switchMap
+import androidx.paging.PagingData
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.auth.AppAuth
 import ru.netology.dto.Post
-import ru.netology.model.FeedModel
 import ru.netology.model.FeedModelState
 import ru.netology.model.PhotoModel
 import ru.netology.repository.PostRepository
@@ -38,16 +39,13 @@ class PostViewModel @Inject constructor(
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val data: LiveData<FeedModel> = appAuth.authStateFlow.flatMapLatest { (myId, _) ->
-        repository.data()
-            .map { posts ->
-                FeedModel(
-                    posts.map { post -> post.copy(ownedByMe = post.authorId == myId) },
-                    posts.isEmpty()
-                )
-            }
-
-    }.asLiveData(Dispatchers.Default)
+    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.data
+                .map { posts ->
+                    posts.map { post -> post.copy(ownedByMe = post.authorId == myId) }
+                }
+        }
 
     private val edited = MutableLiveData(empty)
 
@@ -59,18 +57,17 @@ class PostViewModel @Inject constructor(
         MutableLiveData<String>()
     }
 
-    val openPostById: MutableLiveData<Long> by lazy {
-        MutableLiveData<Long>()
+    val openPost: MutableLiveData<Post> by lazy {
+        MutableLiveData<Post>()
     }
     val _photoState = MutableLiveData<PhotoModel?>()
     val photoState: LiveData<PhotoModel?>
         get() = _photoState
 
-    val newerCount: LiveData<Int> = data.switchMap {
-        val id = it.posts?.firstOrNull()?.id ?: 0L
-
-        repository.getNewer(id).asLiveData(Dispatchers.Default)
-    }
+//    val newerCount: Flow<Int> = data.flatMapLatest {
+//        val id = it?.firstOrNull()?.id ?: 0L
+//        repository.getNewer(id).flowOn(Dispatchers.Default)
+//    }
 
     init {
         loadPosts()
