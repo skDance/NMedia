@@ -124,13 +124,13 @@ class FeedFragment : Fragment() {
 //            }
 //        }
 
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (positionStart == 0) {
-                    binding.list.smoothScrollToPosition(0)
-                }
-            }
-        })
+//        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+//            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+//                if (positionStart == 0) {
+//                    binding.list.smoothScrollToPosition(0)
+//                }
+//            }
+//        })
 
         val itemAnimator = binding.list.itemAnimator
         if (itemAnimator is DefaultItemAnimator) {

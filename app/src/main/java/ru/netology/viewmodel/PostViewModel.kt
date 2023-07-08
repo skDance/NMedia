@@ -65,7 +65,7 @@ class PostViewModel @Inject constructor(
         get() = _photoState
 
 //    val newerCount: Flow<Int> = data.flatMapLatest {
-//        val id = it?.firstOrNull()?.id ?: 0L
+//        val id = posts?.firstOrNull()?.id ?: 0L
 //        repository.getNewer(id).flowOn(Dispatchers.Default)
 //    }
 
