@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.R
+import ru.netology.adapter.PostLoadingStateAdapter
 import ru.netology.adapter.PostsAdapter
 import ru.netology.adapter.onInteractionListener
 import ru.netology.auth.AppAuth
@@ -95,7 +96,10 @@ class FeedFragment : Fragment() {
 //            }
         })
 
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PostLoadingStateAdapter { adapter.retry() },
+            footer = PostLoadingStateAdapter { adapter.retry() }
+        )
         viewModel.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
@@ -176,14 +180,17 @@ class FeedFragment : Fragment() {
                             showDialog(SING_OUT)
                             true
                         }
+
                         R.id.signin -> {
                             findNavController().navigate(R.id.action_feedFragment_to_authorizationFragment)
                             true
                         }
+
                         R.id.signup -> {
                             findNavController().navigate(R.id.action_feedFragment_to_registrationFragment)
                             true
                         }
+
                         else -> false
                     }
                 }
@@ -209,6 +216,7 @@ class FeedFragment : Fragment() {
                     }
                     .create()
             }
+
             SING_OUT -> {
                 dialog
                     .setTitle(R.string.dialog_logout_title)

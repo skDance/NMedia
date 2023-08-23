@@ -13,10 +13,7 @@ import ru.netology.auth.AuthState
 import ru.netology.dao.PostDao
 import ru.netology.dao.PostRemoteKeyDao
 import ru.netology.db.AppDb
-import ru.netology.dto.Attachment
-import ru.netology.dto.AttachmentType
-import ru.netology.dto.Media
-import ru.netology.dto.Post
+import ru.netology.dto.*
 import ru.netology.entity.PostEntity
 import ru.netology.entity.toEntity
 import ru.netology.error.ApiError
@@ -26,6 +23,7 @@ import ru.netology.model.PhotoModel
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class PostRepositoryImpl @Inject constructor(
@@ -35,7 +33,7 @@ class PostRepositoryImpl @Inject constructor(
     appDb: AppDb,
 ) : PostRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 10, enablePlaceholders = false),
         pagingSourceFactory = { postDao.getPagingSource() },
         remoteMediator = PostRemoteMediator(
@@ -44,8 +42,16 @@ class PostRepositoryImpl @Inject constructor(
             postRemoteKeyDao = postRemoteKeyDao,
             appDb = appDb
         )
-    ).flow
-        .map { it.map(PostEntity::toDto) }
+    ).flow.map { pagingData ->
+        pagingData.map(PostEntity::toDto)
+            .insertSeparators { previous, _ ->
+                if (previous?.id?.rem(5) == 0L) {
+                    Advertising(Random.nextLong(), "figma.jpg")
+                } else {
+                    null
+                }
+            }
+    }
 
     override suspend fun getAll() {
         val response = apiService.getAll()

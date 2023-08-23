@@ -22,11 +22,11 @@
         android:id="@+id/nmedia_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="NetoMedia"
-        android:textSize="24dp"
-        android:textColor="@color/purple_500"
         android:layout_marginBottom="50dp"
         android:fontFamily="@font/pacifico_regular"
+        android:text="NetoMedia"
+        android:textColor="@color/purple_500"
+        android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@id/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,8 +53,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="50dp"
         android:hint="Password"
-        android:textSize="24dp"
         android:inputType="textPassword"
+        android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@id/authButton"
         app:layout_constraintTop_toBottomOf="@id/login" />
 
@@ -62,9 +62,9 @@
         android:id="@+id/authButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sing_in"
         android:shadowColor="@color/white"
         android:shadowRadius="3"
+        android:text="@string/sing_in"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,12 +75,12 @@
         android:id="@+id/authProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:indeterminateTint="@color/purple_200"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

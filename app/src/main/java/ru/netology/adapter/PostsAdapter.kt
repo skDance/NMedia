@@ -6,12 +6,16 @@ import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ru.netology.R
-import ru.netology.databinding.CardPostBinding
+import ru.netology.dto.Advertising
+import ru.netology.dto.FeedItem
 import ru.netology.dto.Post
+import ru.netology.BuildConfig
+import ru.netology.R
+import ru.netology.databinding.CardAdvertisingBinding
+import ru.netology.databinding.CardPostBinding
+import ru.netology.view.load
 
 interface onInteractionListener {
     fun onLike(post: Post) {}
@@ -25,19 +29,53 @@ interface onInteractionListener {
 
 class PostsAdapter(
     private val onInteractionListener: onInteractionListener
-) : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val binding = ru.netology.databinding.CardPostBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return PostViewHolder(binding, onInteractionListener)
-    }
+) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallback()) {
 
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position) ?: return
-        holder.bind(post)
+    override fun getItemViewType(position: Int): Int =
+        when (getItem(position)) {
+            is Advertising -> R.layout.card_advertising
+            is Post -> R.layout.card_post
+            null -> error("unknown item type")
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
+            R.layout.card_post -> {
+                val binding = CardPostBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+                PostViewHolder(binding, onInteractionListener)
+            }
+
+            R.layout.card_advertising -> {
+                val binding = CardAdvertisingBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+                AdvertisingViewHolder(binding)
+            }
+
+            else -> error("unknown view type: $viewType")
+        }
+
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is Advertising -> (holder as? AdvertisingViewHolder)?.bind(item)
+            is Post -> (holder as? PostViewHolder)?.bind(item)
+            null -> error("unknown item type")
+        }
+    }
+}
+
+class AdvertisingViewHolder(
+    private val binding: CardAdvertisingBinding,
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(ad: Advertising) {
+        binding.image.load("${BuildConfig.BASE_URL}/media/${ad.image}")
     }
 }
 
@@ -71,10 +109,12 @@ class PostViewHolder(
                                 onInteractionListener.onRemove(post)
                                 true
                             }
+
                             R.id.edit -> {
                                 onInteractionListener.onEdit(post)
                                 true
                             }
+
                             else -> false
                         }
                     }
@@ -118,12 +158,15 @@ class PostViewHolder(
     }
 }
 
-class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
-    override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
+class PostDiffCallback : DiffUtil.ItemCallback<FeedItem>() {
+    override fun areItemsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean {
+        if (oldItem::class != newItem::class) {
+            return false
+        }
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+    override fun areContentsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean {
         return oldItem == newItem
     }
 }

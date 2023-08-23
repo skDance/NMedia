@@ -31,9 +31,11 @@ class PostRemoteMediator(
                         apiService.getAfter(it, state.config.pageSize)
                     } ?: apiService.getLatest(state.config.initialLoadSize)
                 }
+
                 LoadType.PREPEND -> {
                     return MediatorResult.Success(true)
                 }
+
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
                     apiService.getBefore(id, state.config.pageSize)
@@ -51,18 +53,19 @@ class PostRemoteMediator(
                 when (loadType) {
                     LoadType.REFRESH -> {
                         postRemoteKeyDao.insert(
-                            listOf(
-                                PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.AFTER,
-                                    body.first().id,
-                                ),
-                                PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.BEFORE,
-                                    body.last().id,
-                                )
-                            )
+                            PostRemoteKeyEntity(
+                                PostRemoteKeyEntity.KeyType.AFTER,
+                                body.first().id,
+                            ),
                         )
+                        if (postRemoteKeyDao.isEmpty()) {
+                            PostRemoteKeyEntity(
+                                PostRemoteKeyEntity.KeyType.BEFORE,
+                                body.last().id,
+                            )
+                        }
                     }
+
                     LoadType.APPEND -> {
                         postRemoteKeyDao.insert(
                             PostRemoteKeyEntity(
@@ -71,6 +74,8 @@ class PostRemoteMediator(
                             )
                         )
                     }
+
+                    else -> {}
                 }
                 postDao.insert(body.map(PostEntity::fromDto))
             }

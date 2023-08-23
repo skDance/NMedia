@@ -24,6 +24,7 @@
     <string name="reg_error_password_confirm">Необходимо подтвердить пароль</string>
     <string name="reg_error_password_confirm_null">Необходимо подтвердить пароль</string>
     <string name="dialog_auth_title">Требуется авторизация</string>
+    <string name="ad_description">Реклама</string>
     <string name="dialog_auth_negative_button">Нет</string>
     <string name="dialog_positive_button">Да</string>
     <string name="dialog_negative_button">Нет</string>

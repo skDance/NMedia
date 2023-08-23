@@ -3,12 +3,14 @@ package ru.netology.viewmodel
 import androidx.lifecycle.*
 import androidx.lifecycle.switchMap
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.auth.AppAuth
+import ru.netology.dto.FeedItem
 import ru.netology.dto.Post
 import ru.netology.model.FeedModelState
 import ru.netology.model.PhotoModel
@@ -39,12 +41,21 @@ class PostViewModel @Inject constructor(
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
+    private val cached = repository
+        .data
+        .cachedIn(viewModelScope)
+
+    val data: Flow<PagingData<FeedItem>> = appAuth.authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.data
-                .map { posts ->
-                    posts.map { post -> post.copy(ownedByMe = post.authorId == myId) }
+            cached.map { pagindData ->
+                pagindData.map { post ->
+                    if (post is Post) {
+                        post.copy(ownedByMe = post.authorId == myId)
+                    } else {
+                        post
+                    }
                 }
+            }
         }
 
     private val edited = MutableLiveData(empty)
@@ -64,10 +75,7 @@ class PostViewModel @Inject constructor(
     val photoState: LiveData<PhotoModel?>
         get() = _photoState
 
-//    val newerCount: Flow<Int> = data.flatMapLatest {
-//        val id = posts?.firstOrNull()?.id ?: 0L
-//        repository.getNewer(id).flowOn(Dispatchers.Default)
-//    }
+//
 
     init {
         loadPosts()
